@@ -6,17 +6,7 @@ lab:
 
 # Lab: Configure Azure DNS
   
-All tasks in this lab are performed from the Azure portal (including a PowerShell Cloud Shell session) 
-
-   > **Note**: When not using Cloud Shell, the lab virtual machine must have the Azure PowerShell 1.2.0 module (or newer) installed [https://docs.microsoft.com/en-us/powershell/azure/install-az-ps](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
-
-Lab files: 
-
--  **Labfiles\\Module_04\\Configure_Azure_DNS\\az-100-04b_01_azuredeploy.json**
-
--  **Labfiles\\Module_04\\Configure_Azure_DNS\\az-100-04b_02_azuredeploy.json**
-
--  **Labfiles\\Module_04\\Configure_Azure_DNS\\az-100-04_azuredeploy.parameters.json**
+All tasks in this lab are performed from the Azure portal
 
 
 ### Scenario
@@ -75,17 +65,19 @@ The main tasks for this exercise are as follows:
 
    > **Note**: Take a note of this IP address. You will use it later in this task.
 
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
+1. From the Azure Portal, navigate to **Public IP Addresses** services and create a new Public IP address
 
-   > **Note**: If this is the first time you are launching the Cloud Shell in the current Azure subscription, you will be asked to create an Azure file share to persist Cloud Shell files. If so, accept the defaults, which will result in creation of a storage account in an automatically generated resource group.
+    - IP Version: **IPv4**
 
-1. In the Cloud Shell pane, run the following in order to create a public IP address resource:
+    - SKU: **Basic**
 
-   ```pwsh
-   $rg = Get-AzResourceGroup -Name az1000401b-RG
+    - Name: **az1000401b-pip**
 
-   New-AzPublicIpAddress -ResourceGroupName $rg.ResourceGroupName -Sku Basic -AllocationMethod Static -Name az1000401b-pip -Location $rg.Location
-   ```
+    - IP address assignment: **Static**
+
+    - Resource Group: **az1000401b-RG**
+
+    - Location: **East US**
 
 1. In the Azure portal, navigate to the **az1000401b-RG** resource group blade.
 
@@ -158,73 +150,79 @@ The main tasks for this exercise are as follows:
 
 #### Task 1: Provision a multi-virtual network environment
   
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
+1. From the Azure Portal, create new resource group as below:
 
-1. In the Cloud Shell pane, run the following in order to create a resource group:
+   - Resource group location: East US (or a supported region near you)
+   - Name: az1000402b-RG
 
-   ```pwsh
-   $rg1 = Get-AzResourceGroup -Name 'az1000401b-RG'
+1. Create Virtual Network with below IP address configuration in same region:
 
-   $rg2 = New-AzResourceGroup -Name 'az1000402b-RG' -Location $rg1.Location
-   ```
+    - Vnet 1: 10.104.0.0/16
+    - Vnet 1 name: az1000402b-vnet1
+    - Subnet name: subnet1
+    - Subnet: 10.104.0.0/24
+    - Resource Group Name: az1000402b-RG
 
-1. In the Cloud Shell pane, run the following in order to create two Azure virtual networks:
+1. Create second Virtual Network with below IP address configuration in same region:
 
-   ```pwsh
-   $subnet1 = New-AzVirtualNetworkSubnetConfig -Name subnet1 -AddressPrefix '10.104.0.0/24'
+    - Vnet 2: 10.204.0.0/16
+    - Vnet 1 name: az1000402b-vnet
+    - Subnet name: subnet1
+    - Subnet: 10.204.0.0/24
+    - Resource Group Name: az1000402b-RG
 
-   $vnet1 = New-AzVirtualNetwork -ResourceGroupName $rg2.ResourceGroupName -Location $rg2.Location -Name az1000402b-vnet1 -AddressPrefix 10.104.0.0/16 -Subnet $subnet1
-
-   $subnet2 = New-AzVirtualNetworkSubnetConfig -Name subnet1 -AddressPrefix '10.204.0.0/24'
-
-   $vnet2 = New-AzVirtualNetwork -ResourceGroupName $rg2.ResourceGroupName -Location $rg2.Location -Name az1000402b-vnet2 -AddressPrefix 10.204.0.0/16 -Subnet $subnet2
-   ```
 
 #### Task 2: Create a private DNS zone
+  
+1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the Azure subscription you intend to use in this lab.
 
-1. In the Cloud Shell pane, run the following in order to create a private DNS zone with the first virtual network supporting registration and the second virtual network supporting resolution:
+1. In the Azure portal, navigate to the **Create a resource** blade.
 
-   ```pwsh
-   
-   Install-Module -Name Az.PrivateDns -force
-   
-   $vnet1 = Get-AzVirtualNetwork -Name az1000402b-vnet1
+1. From the **Create a resource** blade, search Azure Marketplace for **Private DNS zones**.
 
-   $vnet2 = Get-AzVirtualNetwork -name az1000402b-vnet2
-   
-   $zone = New-AzPrivateDnsZone -Name adatum.local -ResourceGroupName $rg2.ResourceGroupName
+1. Select **Private DNS Zones**, and then click **Create**.
 
-   $vnet1link = New-AzPrivateDnsVirtualNetworkLink -ZoneName $zone.Name -ResourceGroupName $rg2.ResourceGroupName -Name "vnet1Link" -VirtualNetworkId $vnet1.id -EnableRegistration
+1. From the to **Create private DNS zone** blade, create a new DNS zone with the following settings: 
 
-   $vnet2link = New-AzPrivateDnsVirtualNetworkLink -ZoneName $zone.Name -ResourceGroupName $rg2.ResourceGroupName -Name "vnet2Link" -VirtualNetworkId $vnet2.id
-   ```
+    - Subscription: the name of the Azure subscription you are using in this lab
 
-1. In the Cloud Shell pane, run the following in order to verify that the private DNS zone was successfully created:
+    - Resource group: the name of a new resource group **az1000402b-RG**
 
-   ```pwsh
-   Get-AzPrivateDnsZone -ResourceGroupName $rg2.ResourceGroupName
-   ```
+    - Name: adatum.local
 
+    - Resource group location: **East US** (or a supported region near you)
+
+1. Once the private DNS zone is created, navigate to **Virtual Network Links** under **Settings** section
+
+1. Click **Add** and create link to Vnet1 with below settings
+    - Link name: vnet1Link
+    - Vnet Network: az1000402b-vnet1
+    - Enable Auto registration: Enabled
+
+1. Click second link by **Add** and create link to Vnet2 with below settings
+    - Link name: vnet2Link
+    - Vnet Network: az1000402b-vnet2
+    - Enable Auto registration: Disabled
 
 #### Task 3: Deploy Azure VMs into virtual networks
 
-1. In the Cloud Shell pane, upload **az-100-04b_01_azuredeploy.json**, **az-100-04b_02_azuredeploy.json**, and **az-100-04_azuredeploy.parameters.json** files.
+1. Create new Azure VM with below configuration in First Virtual Network:
+    - Name: az1000402b-vm1
+    - Vnet: az1000402b-vnet1
+    - SKU: Standard_DS2_v2
+    - Subnet: subnet1
+    - User name: **Student**
+    - Password: **Pa55w.rd1234**
 
-1. In the Cloud Shell pane, run the following in order to deploy an Azure VM into the first virtual network:
+2. Create second Azure VM with below configuration in Second Virtual Network:
+    - Name: az1000402b-vm2
+    - Vnet: az1000402b-vnet2
+    - SKU: Standard_DS2_v2
+    - Subnet: subnet1
+    - User name: **Student**
+    - Password: **Pa55w.rd1234**
 
-   ```pwsh
-   cd $home
-
-   New-AzResourceGroupDeployment -ResourceGroupName $rg2.ResourceGroupName -TemplateFile "./az-100-04b_01_azuredeploy.json" -TemplateParameterFile "./az-100-04_azuredeploy.parameters.json" -AsJob
-   ```
-
-1. In the Cloud Shell pane, run the following in order to deploy an Azure VM into the second virtual network:
-
-   ```pwsh
-   New-AzResourceGroupDeployment -ResourceGroupName $rg2.ResourceGroupName -TemplateFile "./az-100-04b_02_azuredeploy.json" -TemplateParameterFile "./az-100-04_azuredeploy.parameters.json" -AsJob
-   ```
-
-   > **Note**: Wait for both deployments to complete before you proceed to the next task. You can identify the state of the jobs by running the `Get-Job` cmdlet in the Cloud Shell pane.
+   > **Note**: Wait for both deployments to complete before you proceed to the next task.
 
 
 #### Task 4: Validate Azure DNS-based name reservation and resolution for the private domain
@@ -247,11 +245,12 @@ The main tasks for this exercise are as follows:
 
 1. Verify that the name is successfully resolved.
 
-1. Switch back to the lab virtual machine and, in the Cloud Shell pane of the Azure portal window, run the following in order to create an additional DNS record in the private DNS zone:
+1. Switch back to the lab virtual machine and, in the Azure portal window, create an additional DNS record in the private DNS zone **adatum.local** (record set):
 
-   ```pwsh
-   New-AzPrivateDnsRecordSet -ResourceGroupName $rg2.ResourceGroupName -Name www -RecordType A -ZoneName adatum.local -Ttl 3600 -PrivateDnsRecords (New-AzPrivateDnsRecordConfig -IPv4Address "10.104.0.4")
-   ```
+    - Name: www
+    - Record Type: A
+    - IP address: 10.104.0.4
+    - TTL : 1 hour
 
 1. Switch again to the Remote Desktop session to **az1000402b-vm2** and run the following from the Command Prompt window: 
 
@@ -265,28 +264,8 @@ The main tasks for this exercise are as follows:
 
 ## Exercise 3: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
+1. Open Azure portal, navigate to resource group **az1000401b-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1000401b-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
-
-> **Result**: In this exercise, you removed the resources used in this lab.
+1. Repeat the steps for **az1000402b-RG** resource group
