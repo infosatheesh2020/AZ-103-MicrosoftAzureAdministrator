@@ -8,14 +8,6 @@ lab:
   
 All tasks in this lab are performed from the Azure portal except for Exercise 2 Task 3, Exercise 3 Task 1, and Exercise 3 Task 2, which include steps performed from a Remote Desktop session to an Azure VM
 
-Lab files: 
-
--  **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_01_azuredeploy.json**
-
--  **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_02_azuredeploy.json**
-
--  **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_azuredeploy.parameters.json**
-
 ### Scenario
   
 Adatum Corporation wants to implement service chaining between Azure virtual networks in its Azure subscription. 
@@ -25,7 +17,7 @@ Adatum Corporation wants to implement service chaining between Azure virtual net
   
 After completing this lab, you will be able to:
 
-- Create Azure virtual networks and deploy Azure VM by using Azure Resource Manager templates.
+- Create Azure virtual networks and deploy Azure VM
 
 - Configure VNet peering.
 
@@ -38,102 +30,79 @@ After completing this lab, you will be able to:
   
 The main tasks for this exercise are as follows:
 
-1. Create the first virtual network hosting two Azure VMs by using an Azure Resource Manager template
+1. Create the first virtual network hosting two Azure VMs 
 
-1. Create the second virtual network in the same region hosting a single Azure VM by using an Azure Resource Manager template
+1. Create the second virtual network in the same region hosting a single Azure VM 
 
 #### Task 1: Create the first virtual network hosting two Azure VMs by using an Azure Resource Manager template
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the Azure subscription you intend to use in this lab.
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create resource group **az1000401-RG** in **Region** close to you (Eg: East US)
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
+1. In Azure portal, create new **Virtual Network** with below configuration
 
-1. Use the list of search results to navigate to the **Template deployment (deploy using custom templates)** blade, and then click **Create**.
+   - Name: **az1000401-vnet1**
+   - Vnet address: **10.104.0.0/16**
+   - Subnets: **subnet0 (10.104.0.0/24)**, **subnet1 (10.104.1.0/24)**
+   - Region: Resource Group location
+   - Resource Group: **az1000401-RG**
 
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
+1. In Azure portal create new Virtual Machine with below configuration:
 
-1. From the **Edit template** blade, load the template file **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_01_azuredeploy.json**. 
+   - Vm1Name: az1000401-vm1
+   - Region: Same as Resource Group location
+   - Vm Size: use Standard_DS1_v2 or Standard_DS2_v2
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Virtual Network Name: az1000401-vnet1
+   - Subnet name: subnet0
+   - NIC name: az1000401-nic1
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM hosting Windows Server 2016 Datacenter.
+1. In Azure portal create second Virtual Machine with below configuration:
 
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1000401-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
-
-    - Vm Size: use **Standard_DS1_v2** or **Standard_DS2_v2**, based on the instructor's recommendations
-
-    - Vm1Name: **az1000401-vm1**
-
-    - Vm2Name: **az1000401-vm2**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000401-vnet1**
+   - Vm1Name: az1000401-vm2
+   - Region: Same as Resource Group location
+   - Vm Size: use Standard_DS1_v2 or Standard_DS2_v2
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Virtual Network Name: az1000401-vnet1
+   - Subnet name: subnet1
+   - NIC name: az1000401-nic2
 
    > **Note**: To identify Azure regions where you can provision Azure VMs, refer to [**https://azure.microsoft.com/en-us/regions/offers/**](https://azure.microsoft.com/en-us/regions/offers/)
 
    > **Note**: Do not wait for the deployment to complete but proceed to the next task. You will use the network and the virtual machines included in this deployment in the second exercise of this lab.
 
 
-#### Task 2: Create the second virtual network in the same region hosting a single Azure VM by using an Azure Resource Manager template
+#### Task 2: Create the second virtual network in the same region hosting a single Azure VM 
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create resource group **az1000402-RG** in **Region** selected in previous task (Eg: East US)
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
+1. In Azure portal, create new **Virtual Network** with below configuration
 
-1. Use the list of search results and select the **Template deployment (deploy using custom templates)** result, and then click **Create**.
+   - Name: **az1000402-vnet2**
+   - Vnet address: **10.204.0.0/16**
+   - Subnets: **subnet0 (10.204.0.0/24)**
+   - Region: Resource group location
+   - Resource Group: **az1000402-RG**
 
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
+1. In Azure portal create new Virtual Machine with below configuration:
 
-1. From the **Edit template** blade, load the template file **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_02_azuredeploy.json**. 
+   - Vm1Name: az1000402-vm3
+   - Region: Same as Resource Group location
+   - Vm Size: use Standard_DS1_v2 or Standard_DS2_v2
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Virtual Network Name: az1000402-vnet2
+   - Subnet name: subnet0
+   - Resource Group: **az1000402-RG**
+   - NIC name: az1000402-nic3
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM hosting Windows Server 2016 Datacenter.
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **Labfiles\\Module_05\VNet_Peering_and_Service_Chaining\\az-100-04_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1000402-RG**
-
-    - Location: the name of the Azure region which you selected in the previous task
-
-    - Vm Size: use **Standard_DS1_v2** or **Standard_DS2_v2**, based on the instructor's recommendations
-
-    - VmName: **az1000402-vm3**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000402-vnet2**
 
    > **Note**: Do not wait for the deployment to complete but proceed to the next task. You will use the network and the virtual machines included in this deployment in the second exercise of this lab.
 
-> **Result**: After you completed this exercise, you have created two Azure virtual networks and initiated deployments of three Azure VM by using Azure Resource Manager templates.
+> **Result**: After you completed this exercise, you have created two Azure virtual networks and initiated deployments of three Azure VM.
 
 
 ### Exercise 1: Configure VNet peering 
@@ -324,28 +293,8 @@ The main tasks for this exercise are as follows:
 
 ## Exercise 4: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
+1. Open Azure portal, navigate to resource group **az1000401-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1000401-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
-
-> **Result**: In this exercise, you removed the resources used in this lab.
+1. Repeat the steps for **az1000402-RG** resource group
