@@ -6,19 +6,7 @@ lab:
 
 # Lab: Use Azure Network Watcher for monitoring and troubleshooting network connectivity
 
-All tasks in this lab are performed from the Azure portal (including a PowerShell Cloud Shell session)  
-
-   > **Note**: When not using Cloud Shell, the lab virtual machine must have the Azure PowerShell 1.2.0 module (or newer) installed[https://docs.microsoft.com/en-us/powershell/azure/install-az-ps](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
-
-Lab files: 
-
--  **Labfiles\\Module_06\\Network_Watcher\\az-101-03b_01_azuredeploy.json**
-
--  **Labfiles\\Module_06\\Network_Watcher\\az-101-03b_02_azuredeploy.json**
-
--  **Labfiles\\Module_06\\Network_Watcher\\az-101-03b_01_azuredeploy.parameters.json**
-
--  **Labfiles\\Module_06\\Network_Watcher\\az-101-03b_02_azuredeploy.parameters.json**
+All tasks in this lab are performed from the Azure portal 
 
 
 ### Scenario
@@ -39,7 +27,7 @@ After completing this lab, you will be able to:
   
 The main tasks for this exercise are as follows:
 
-1. Deploy Azure VMs, an Azure Storage account, and an Azure SQL Database instance by using an Azure Resource Manager template
+1. Deploy Azure VMs, an Azure Storage account, and an Azure SQL Database instance 
 
 1. Enable Azure Network Watcher service
 
@@ -48,109 +36,84 @@ The main tasks for this exercise are as follows:
 1. Establish service endpoints to an Azure Storage account and Azure SQL Database instance
 
 
-#### Task 1: Deploy Azure VMs, an Azure Storage account, and an Azure SQL Database instance by using Azure Resource Manager templates
+#### Task 1: Deploy Azure VMs, an Azure Storage account, and an Azure SQL Database instance
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the target Azure subscription.
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create a new resource group with below configuration
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
+   - Name: az1010301b-RG
+   - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs and Azure SQL Database (Eg: East US)
 
-1. In the list of results, click **Template deployment (deploy using custom templates)**, and then click **Create**.
+1. In the Azure portal, create a Virtual Network with below configuration:
 
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
+   - Virtual Network Name: az1010301b-vnet1
+   - Subnet name: subnet0
+   - Location: same as resource group location
+   - Resource Group Name: az1010301b-RG
+   - Vnet Address space: 10.203.0.0/20
+   - Subnet Address space: 10.203.0.0/24
 
-1. From the **Edit template** blade, load the template file **az-101-03b_01_azuredeploy.json**. 
+1. Create a Virtual Machine with below configuration
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM, an Azure SQL Database, and an Azure Storage account.
+   - Vnet: az1010301b-vnet1
+   - Subnet: subnet0
+   - Location: same as resource group location
+   - Resource Group: az1010301b-RG
+   - Name: az1010301b-vm1
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Size: Standard_DS2_v2
+   - NIC name: az1010301b-nic1
+   - publicIPAddressName: az1010301b-pip1
 
-1. Save the template and return to the **Custom deployment** blade. 
+1. Create a new SQL database server and database instance with below configuration
 
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
+   - Location: same as resource group location
+   - Resource Group: az1010301b-RG
+   - Sql Login Name: Student
+   - Sql Login Password: Pa55w.rd1234
+   - Database Name: az1010301b-db1
+   - Sku Name: Basic
+   - Sku Tier: Basic
+   - SQL server name prefix: sql1010301b
 
-1. From the **Edit parameters** blade, load the parameters file **az-101-03b_01_azuredeploy.parameters.json**. 
+1. Create a new storage account with below configuration
 
-1. Save the parameters and return to the **Custom deployment** blade. 
+   - Location: same as resource group location
+   - Resource Group: az1010301b-RG
+   - storageAccountName prefix: az1010301b
+   - storageAccountSku: Standard_LRS
+   - storageAccountKind: Storage
 
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you intend to use in this lab
-
-    - Resource group: the name of a new resource group **az1010301b-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs and Azure SQL Database
-
-    - Vm Size: **Standard_DS2_v2**
-
-    - Vm Name: **az1010301b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1010301b-vnet1**
-
-    - Sql Login Name: **Student**
-
-    - Sql Login Password: **Pa55w.rd1234**
-
-    - Database Name: **az1010301b-db1**
-
-    - Sku Name: **Basic**
-
-    - Sku Tier: **Basic**
-
-   > **Note**: To identify VM sizes available in your subscription in a given region, run the following from Cloud Shell and review the values in the **Restriction** column (where &lt;location&gt; represents the target Azure region):
-   
-   ```pwsh
-   Get-AzComputeResourceSku | where {$_.Locations -icontains "<location>"} | Where-Object {($_.ResourceType -ilike "virtualMachines")}
-   ```
-   
-   > **Note**: To identify whether you can provision Azure SQL Database in a given region, run the following from Cloud Shell and ensure that the resulting **Status** is set to **Available** (where &lt;location&gt; represents the target Azure region):
-
-   ```pwsh
-   Get-AzSqlCapability -LocationName <regionname>
-   ```
-   
    > **Note**: Do not wait for the deployment to complete but proceed to the next step. 
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Deploy second set of resources starting with resource group with below configuration
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
+   - Name: az1010302b-RG
+   - Location: the name of an Azure region where you can provision Azure VMs, but which is different from the one you selected during previous deployment (Eg: West US)
 
-1. In the results, click **Template deployment (deploy using custom templates)**, and then click **Create**.
+1. In the Azure portal, create a second Virtual Network with below configuration:
 
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
+   - Virtual Network Name: az1010302b-vnet2
+   - Subnet name: subnet0
+   - Location: same as resource group location
+   - Resource Group Name: az1010302b-RG
+   - Vnet Address space: 10.203.16.0/20
+   - Subnet Address space: 10.203.16.0/24
 
-1. From the **Edit template** blade, load the template file **az-101-03b_02_azuredeploy.json**. 
+1. Create a second Virtual Machine with below configuration
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM.
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-101-03b_02_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1010302b-RG**
-
-    - Location: the name of an Azure region where you can provision Azure VMs, but which is **different** from the one you selected during previous deployment, 
-
-    - Vm Size: **Standard_DS2_v2**
-
-    - Vm Name: **az1010302b-vm2**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1010302b-vnet2**
+   - Vnet: az1010302b-vnet2
+   - Subnet: subnet0
+   - Location: same as resource group location
+   - Resource Group: az1010302b-RG
+   - Name: az1010302b-vm2
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Size: Standard_DS2_v2
+   - NIC name: az1010302b-nic1
+   - publicIPAddressName: az1010302b-pip1
 
    > **Note**: Make sure to choose a different Azure region for this deployment
 
@@ -166,7 +129,7 @@ The main tasks for this exercise are as follows:
 
 #### Task 3: Establish peering between Azure virtual networks
 
-   > **Note**: Before you start this task, ensure that the template deployment you started in the first task of this exercise has completed. 
+   > **Note**: Before you start this task, ensure that the deployment you started in the first task of this exercise has completed. 
 
 1. In the Azure portal, navigate to the **az1010301b-vnet1** virtual network blade.
 
@@ -315,14 +278,12 @@ The main tasks for this exercise are as follows:
 
 #### Task 2: Test network connectivity to an Azure Storage account by using Network Watcher
 
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
+1. From the Azure Portal, navigate to storage account and get the blob storage FQDN (Eg: mystore1.blob.core.windows.net)
 
-   > **Note**: If this is the first time you are launching the Cloud Shell in the current Azure subscription, you will be asked to create an Azure file share to persist Cloud Shell files. If so, accept the defaults, which will result in creation of a storage account in an automatically generated resource group.
+1. Get the IP address of blob storage account by passing URL from previous step:
 
-1. In the Cloud Shell pane, run the following command to identify the IP address of the blob service endpoint of the Azure Storage account you provisioned in the previous exercise:
-
-   ```pwsh
-   [System.Net.Dns]::GetHostAddresses($(Get-AzStorageAccount -ResourceGroupName 'az1010301b-RG')[0].StorageAccountName + '.blob.core.windows.net').IPAddressToString
+   ```sh
+   nslookup <blob store FQDN>
    ```
 
 1. Note the resulting string and, from the **Network Watcher - Connection troubleshoot** blade, initiate a check with the following settings:
@@ -420,12 +381,12 @@ The main tasks for this exercise are as follows:
 
 #### Task 3: Test network connectivity to an Azure SQL Database by using Network Watcher
 
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
+1. From the Azure Portal, navigate to SQL Database server instance and get the FQDN of Azure SQL server (Eg: mystore1.database.windows.net)
 
-1. In the Cloud Shell pane, run the following command to identify the IP address of the Azure SQL Database server you provisioned in the previous exercise:
+1. Get the IP address of Azure Database Server by passing URL from previous step:
 
-   ```pwsh
-   [System.Net.Dns]::GetHostAddresses($(Get-AzSqlServer -ResourceGroupName 'az1010301b-RG')[0].FullyQualifiedDomainName).IPAddressToString
+   ```sh
+   nslookup <DB Server FQDN>
    ```
 
 1. Note the resulting string and, from the **Network Watcher - Connection troubleshoot** blade, initiate a check with the following settings:
@@ -525,28 +486,8 @@ The main tasks for this exercise are as follows:
 
 ## Exercise 3: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
+1. Open Azure portal, navigate to resource group **az1010301b-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1010301b-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1010')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1010')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
-
-> **Result**: In this exercise, you removed the resources used in this lab.
+1. Repeat the steps for **az1010302b-RG** resource group
