@@ -284,4 +284,4 @@ The main tasks for this exercise are as follows:
 
 1. Open Azure portal, navigate to resource group **az1000301-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1000301-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. Repeat the steps for **az1000301-RG** resource group
+1. Repeat the steps for **az1000303-RG** resource group
