@@ -277,3 +277,9 @@ The main tasks for this exercise are as follows:
 1. Verify that the browser displays the default IIS home page. 
 
 > **Result**: After you completed this exercise, you have identified an available DNS name for an Azure VM scale set deployment, deployed an Azure VM scale set, and installed IIS on a scale set VM by using the DSC extension.
+
+## Exercise 4: Remove lab resources
+
+#### Task 1: Open Azure Portal
+
+1. Open Azure portal, navigate to resource group **az1000301-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1000301-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
