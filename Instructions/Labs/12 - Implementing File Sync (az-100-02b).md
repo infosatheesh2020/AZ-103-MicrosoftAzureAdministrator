@@ -8,12 +8,6 @@ lab:
 
 All tasks in this lab are performed from the Azure portal, except for steps in Exercise 1 and Exercise 2 performed within a Remote Desktop session to an Azure VM.
 
-Lab files: 
-
--  **Labfiles\\Module_12\\Implementing_File_Sync\\az-100-02b_azuredeploy.json**
-
--  **Labfiles\\Module_12\\Implementing_File_Sync\\az-100-02b_azuredeploy.parameters.json**
-
 ### Scenario
   
 Adatum Corporation hosts its file shares in on-premises file servers. Considering its plans to migrate majority of its workloads to Azure, Adatum is looking for the most efficient method to replicate its data to file shares that will be available in Azure. To implement it, Adatum will use Azure File Sync.
@@ -22,7 +16,7 @@ Adatum Corporation hosts its file shares in on-premises file servers. Considerin
   
 After completing this lab, you will be able to:
 
--  Deploy an Azure VM by using an Azure Resource Manager template
+-  Deploy an Azure VM by using an Azure Portal
 
 -  Prepare Azure File Sync infrastructure
 
@@ -33,50 +27,41 @@ After completing this lab, you will be able to:
   
 The main tasks for this exercise are as follows:
 
-1. Deploy an Azure VM by using an Azure Resource Manager template
+1. Deploy an Azure VM by using Azure Portal
 
 
-#### Task 1: Deploy an Azure VM by using an Azure Resource Manager template
+#### Task 1: Deploy an Azure VM by using Azure Portal
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the Azure subscription you intend to use in this lab.
 
-1. In the Azure portal, navigate to the **New** blade.
+1. Create a new resource group with below configuration
 
-1. From the **New** blade, search Azure Marketplace for **Template deployment**.
+   - Name: az1000201b-RG
+   - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs (Eg: East US)
 
-1. Use the list of search results to navigate to the **Custom deployment** blade.
+1. In the Azure portal, create a Virtual Network with below configuration:
 
-1. On the **Custom deployment** blade, select the **Build your own template in the editor**.
+   - Virtual Network Name: az1000201b-vnet1
+   - Subnet name: subnet0
+   - Location: same as resource group location
+   - Resource Group Name: az1000201b-RG
+   - Vnet Address space: 10.102.0.0/16
+   - Subnet Address space: 10.102.0.0/24
 
-1. From the **Edit template** blade, load the template file **az-100-02b_azuredeploy.json**. 
+1. Create a Virtual Machine with below configuration
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM hosting Windows Server 2016 Datacenter with a single data disk.
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-100-02b_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1000201b-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
-
-    - Vm Size: **Standard_DS1_v2**
-
-    - Vm Name: **az1000201b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000201b-vnet1**
+   - Vnet: az1000201b-vnet1
+   - Subnet: subnet0
+   - Location: same as resource group location
+   - Resource Group: az1000201b-RG
+   - Name: az1000201b-vm1
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Size: Standard_DS1_v2
+   - NIC name: az1000201b-nic1
+   - publicIPAddressName: az1000201b-pip1
+   - Image: Windows Server 2016-Datacenter
+   - Data Disk: 16 GB
 
    > **Note**: To identify Azure regions where you can provision Azure VMs, refer to [**https://azure.microsoft.com/en-us/regions/offers/**](https://azure.microsoft.com/en-us/regions/offers/)
 
@@ -84,7 +69,7 @@ The main tasks for this exercise are as follows:
 
    > **Note**: Keep in mind that the purpose of Azure VM **az1000201b-vm1** is to emulate an on-premises file server in our scenario.
 
-> **Result**: After you completed this exercise, you have initiated a template deployment of an Azure VM **az1000201b-vm1** that you will use in the next exercise of this lab.
+> **Result**: After you completed this exercise, you have initiated a  deployment of an Azure VM **az1000201b-vm1** that you will use in the next exercise of this lab.
 
 
 ### Exercise 1: Prepare Azure File Sync infrastructure
