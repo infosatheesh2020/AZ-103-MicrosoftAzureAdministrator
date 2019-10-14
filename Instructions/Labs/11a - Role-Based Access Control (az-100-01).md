@@ -6,11 +6,7 @@ lab:
 
 # Lab: Role-Based Access Control 
 
-All tasks in this lab are performed from the Azure portal (including a PowerShell Cloud Shell session)  
-
-   > **Note**: When not using Cloud Shell, the lab virtual machine must have the Azure PowerShell 1.2.0 module (or newer) installed [https://docs.microsoft.com/en-us/powershell/azure/install-az-ps](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
-
-Lab files: none
+All tasks in this lab are performed from the Azure portal 
 
 ### Scenario
   
@@ -150,45 +146,14 @@ The main tasks for this exercise are as follows:
   
 The main tasks for this exercise are as follows:
 
-1. Identify an available DNS name for an Azure VM deployment
-
 1. Attempt an automated deployment of a policy non-compliant Azure VM as a delegated admin
 
-1. Perform an automated deployment of a policy compliant Azure VM as a delegated admin
+1. Perform an  automated deployment of a policy compliant Azure VM as a delegated admin
 
 1. Review Azure Activity Log events corresponding to Azure VM deployments
 
 
-#### Task 1: Identify an available DNS name for an Azure VM deployment
-
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
-
-   > **Note**: If this is the first time you are launching the Cloud Shell in the current Azure subscription, you will be asked to create an Azure file share to persist Cloud Shell files. If so, accept the defaults, which will result in creation of a storage account in an automatically generated resource group.
-
-1. In the Cloud Shell pane, run the following command, substituting the placeholder &lt;custom-label&gt; with any string which is likely to be unique and the placeholder &lt;location-of-az1000101-RG&gt; with the name of the Azure region in which you created the **az1000101-RG** resource group.
-
-   ```pwsh
-   Test-AzDnsAvailability -DomainNameLabel <custom-label> -Location '<location-of-az1000101-RG>'
-   ```
-
-1. Verify that the command returned **True**. If not, rerun the same command with a different value of the &lt;custom-label&gt; until the command returns **True**. 
-
-1. Note the value of the &lt;custom-label&gt; that resulted in the successful outcome. You will need it in the next task
-
-1. Run these commands:
-
-   ```pwsh
-   Register-AzResourceProvider –ProviderNamespace Microsoft.Network
-   ```
-
-   ```pwsh
-   Register-AzResourceProvider –ProviderNamespace Microsoft.Compute
-   ```
-Note: These cmdlets register the Azure Resource Manager Microsoft.Network and Microsoft.Compute resource providers. This is a one-time operation (per subscription) required when using Azure Resource Manager templates to deploy resources managed by these resource providers (if these resource providers have not been yet registered).
-
-Also Note: If you encounter an error after running these commands that mentions a token expiry set to a time that is before the current time, click the power button icon on our Cloud Shell UI and reboot your Cloud Shell instance.  Once restarted, retry these commands.
-
-#### Task 2: Attempt an automated deployment of a policy non-compliant Azure VM as a delegated admin
+#### Task 1: Attempt an automated deployment of a policy non-compliant Azure VM as a delegated admin
 
 1. Launch another browser window in the Private mode.
 
@@ -231,7 +196,7 @@ Also Note: If you encounter an error after running these commands that mentions 
 1. Note that the initiation of the deployment fails. Navigate to the **Errors** blade and note that the deployment of the resource is not allowed by the policy **Allowed virtual machine SKUs**.   
 
 
-#### Task 3: Perform an automated deployment of a policy compliant Azure VM as a delegated admin
+#### Task 2: Perform an automated deployment of a policy compliant Azure VM as a delegated admin
  
 1. From the **Deploy a simple Ubuntu Linux VM** blade, navigate to the **Edit template** blade.
 
@@ -244,7 +209,7 @@ Also Note: If you encounter an error after running these commands that mentions 
 1. Do not wait for the deployment to complete but proceed to the next task.
 
 
-#### Task 4: Review Azure Activity Log events corresponding to Azure VM deployments
+#### Task 3: Review Azure Activity Log events corresponding to Azure VM deployments
 
 1. Switch to the browser window that you used in the previous exercise.
 
@@ -260,28 +225,10 @@ Also Note: If you encounter an error after running these commands that mentions 
 
 ## Exercise 3: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
+1. Open Azure portal, navigate to resource group **az1000101-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1000101-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1000')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
+1. Repeat the steps for **az1000102-RG** resource group
 
 > **Result**: In this exercise, you removed the resources used in this lab.
