@@ -6,15 +6,7 @@ lab:
 
 # Lab: Implementing governance and compliance with Azure initiatives and resource locks
 
-All tasks in this lab are performed from the Azure portal (including a PowerShell Cloud Shell session)  
-
-   > **Note**: When not using Cloud Shell, the lab virtual machine must have the Azure PowerShell 1.2.0 module (or newer) installed [https://docs.microsoft.com/en-us/powershell/azure/install-az-ps](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
-
-Lab files: 
-
--  **Labfiles\\Module_11\\Governance_and_Compliance\\AZ-100.1/az-100-01b_azuredeploy.json**
-
--  **Labfiles\\Module_11\\Governance_and_Compliance\\az-100-01b_azuredeploy.parameters.json**
+All tasks in this lab are performed from the Azure portal
 
 ### Scenario
   
@@ -33,7 +25,7 @@ After completing this lab, you will be able to:
 
 The main tasks for this exercise are as follows:
 
-1. Provision Azure resources by using an Azure Resource Manager template.
+1. Provision Azure resources by using Azure Portal
 
 1. Implement an initiative and policy that evaluate resource tagging compliance.
 
@@ -46,49 +38,47 @@ The main tasks for this exercise are as follows:
 1. Evaluate effects of the remediation task on compliance.
 
 
-#### Task 1: Provision Azure resources by using an Azure Resource Manager template.
+#### Task 1: Provision Azure resources by using Azure Portal
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the Azure subscription you intend to use in this lab.
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create a new resource group with below configuration
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
+   - Name: az1000101b-RG
+   - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs(Eg: East US)
 
-1. Use the list of search results to navigate to the **Custom deployment** blade.
+1. In the Azure portal, create a Virtual Network with below configuration:
 
-1. On the **Custom deployment** blade, select the **Build your own template in the editor**.
+   - Virtual Network Name: az1000101b-vnet1
+   - Subnet name: subnet0
+   - Location: same as resource group location
+   - Resource Group Name: az1000101b-RG
+   - Vnet Address space: 10.102.0.0/16
+   - Subnet Address space: 10.102.0.0/24
 
-1. From the **Edit template** blade, load the template file **az-100-01b_azuredeploy.json**. 
+1. Create a Virtual Machine with below configuration
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM hosting Windows Server 2016 Datacenter, including tags on some of its resources.
+   - Vnet: az1000101b-vnet1
+   - Subnet: subnet0
+   - Location: same as resource group location
+   - Resource Group: az1000101b-RG
+   - Name: az1000101b-vm1
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Size: Standard_DS1_v2
+   - NIC name: az1000101b-nic1
+   - publicIPAddressName: az1000101b-pip1
+   - Tags: "environment":"lab"
+   - Image: Windows 2016 Datacenter
 
-1. Save the template and return to the **Custom deployment** blade. 
+1. Create a storage account with below settings
 
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-100-01b_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1000101b-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
-
-    - Vm Size: **Standard_DS1_v2**
-
-    - Vm Name: **az1000101b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000101b-vnet1**
-
-    - Environment Name: **lab**
+   - Name prefix: az1000101b
+   - storageAccountSku: Standard_LRS
+   - storageAccountKind: Storage V2
+   - Location: same as resource group location
+   - Resource Group Name: az1000101b-RG
+   - Tags: "environment":"lab"
 
    > **Note**: To identify Azure regions where you can provision Azure VMs, refer to [**https://azure.microsoft.com/en-us/regions/offers/**](https://azure.microsoft.com/en-us/regions/offers/)
 
@@ -216,47 +206,13 @@ The main tasks for this exercise are as follows:
 
 1. In the Azure portal, navigate to the **Create a resource** blade.
 
-1. From the **New** blade, search Azure Marketplace for **Template deployment**.
+1. From the **New** blade, search Azure Marketplace for **Virtual Network**.
 
-1. Use the list of search results to navigate to the **Custom deployment** blade.
-
-1. On the **Custom deployment** blade, select the **Build your own template in the editor**.
-
-1. From the **Edit template** blade, load the template file **az-100-01b_azuredeploy.json**. 
-
-   > **Note**: This is the same template that you used for deployment in the first task of this exercise. 
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-100-01b_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1000102b-RG**
-
-    - Location: the name of the Azure region which you chose in the first task of this exercise
-
-    - Vm Size: **Standard_DS1_v2**
-
-    - Vm Name: **az1000102b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000102b-vnet1**
-
-    - Environment Name: **lab**
+1. Deploy a new virtual network without proving any tags during creation.
 
    > **Note**: The deployment will fail. This is expected.
 
-1. You will be presented with the message indicating validation erors. Review the error details, indicating that deployment of resource **az1000102b-vnet1** was disallowed by the policy **Require tag and its value** which is included in the **az10001b - Tagging initiative assignment**.
+1. You will be presented with the message indicating validation erors. Review the error details, indicating that deployment of VNET was disallowed by the policy **Require tag and its value** which is included in the **az10001b - Tagging initiative assignment**.
 
 1. Navigate to the **Policy - Compliance** blade. Identify the entry in the **COMPLIANCE STATE** column.
 
@@ -285,19 +241,7 @@ The main tasks for this exercise are as follows:
 
    > **Note**: At this point, your initiative contains a single policy that automatically remediates tagging non-compliance during deployment of new resources and provides evaluation of compliance status.
 
-1. From the Azure Portal, start a PowerShell session in the Cloud Shell. 
-
-   > **Note**: If this is the first time you are launching the Cloud Shell in the current Azure subscription, you will be asked to create an Azure file share to persist Cloud Shell files. If so, accept the defaults, which will result in creation of a storage account in an automatically generated resource group.
-
-1. In the Cloud Shell pane, run the following commands.
-
-   ```pwsh
-   Get-AzResource -ResourceGroupName 'az1000101b-RG' | ForEach-Object {Set-AzResource -ResourceId $_.ResourceId -Tag @{environment="lab"} -Force }
-   ```
-
-   > **Note**: These commands assign the **environment** tag with the value **lab** to each resource in the resource group **az1000101b-RG**, overwriting any already assigned tags.
-   
-   > **Note**: Wait until the commands successfully complete.   
+1. From the Azure Portal, navigate to all resources listed in the resource group and add tag information (**environment:lab**) so that all resources are tagged correct.
 
 1. In the Azure portal, navigate to the **Tags** blade.
 
@@ -308,53 +252,17 @@ The main tasks for this exercise are as follows:
 
 1. In the Azure portal, navigate to the **Create a resource** blade.
 
-1. From the **New** blade, search Azure Marketplace for **Template deployment**.
+1. From the **New** blade, search Azure Marketplace for **Virtual Network**.
 
-1. Use the list of search results to navigate to the **Custom deployment** blade.
-
-1. On the **Custom deployment** blade, select the **Build your own template in the editor**.
-
-1. From the **Edit template** blade, load the template file **az-100-01b_azuredeploy.json**. 
-
-   > **Note**: This is the same template that you used for deployment in the first task of this exercise. 
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-100-01b_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: **az1000102b-RG**
-
-    - Location: the name of the Azure region which you chose in the first task of this exercise
-
-    - Vm Size: **Standard_DS1_v2**
-
-    - Vm Name: **az1000102b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1000102b-vnet1**
-
-    - Environment Name: **lab**
+1. Deploy a new virtual network without proving any tags during creation.
 
    > **Note**: The deployment will succeed this time. This is expected.
 
-   > **Note**: Do not wait for the deployment to complete before you proceed to the next step. 
-
 1. In the Azure portal, navigate to the **Tags** blade.
 
-1. From the **Tags** blade, display all resources with the **environment** tag set to the value **lab**. Note that all the resources deployed to the resource group **az1000102b-RG** have this tag with the same value automatically assigned.
+1. From the **Tags** blade, display all resources with the **environment** tag set to the value **lab**. Note that all the resources deployed now have this tag with the same value automatically assigned.
 
-   > **Note**: At this point, only some of the resources have been provisioned, however, you should see that all of them have tags assigned to them.
+   > **Note**: You should see that all of the resources have tags assigned to them.
 
 1. Navigate to the **Policy - Compliance** blade. Identify the entry in the **COMPLIANCE STATE** column.
 
@@ -391,11 +299,7 @@ The main tasks for this exercise are as follows:
 
 #### Task 2: Validate functionality of the resource group-level locks
 
-1. In the Azure portal, navigate to the **az1000102b-vm1** virtual machine blade.
-
-1. From the **az1000102b-vm1** virtual machine blade, navigate to the **az1000102b-vm1 - Tags** blade.
-
-1. Try setting the value of the **environment** tag to **dev**. Note that the operation is successful. 
+1. In the Azure portal, navigate to the **az1000101b-vm1** virtual machine blade.
 
 1. In the Azure portal, navigate to the **az1000101b-vm1** virtual machine blade.
 
