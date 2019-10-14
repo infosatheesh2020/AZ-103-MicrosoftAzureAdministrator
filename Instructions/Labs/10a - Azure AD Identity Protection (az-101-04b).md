@@ -8,11 +8,6 @@ lab:
 
 All tasks in this lab are performed from the Azure portal, except for steps in Exercise 2 performed within a Remote Desktop session to an Azure VM.
 
-Lab files:
-
--  **Labfiles\\Module_10\\Azure_AD_Identity_Protection\\az-101-04b_azuredeploy.json**
-
--  **Labfiles\\Module_10\\Azure_AD_Identity_Protection\\az-101-04b_azuredeploy.parameters.json**
 
 ### Scenario
   
@@ -23,7 +18,7 @@ Adatum Corporation wants to take advantage of Azure AD Premium features for Iden
   
 After completing this lab, you will be able to:
 
--  Deploy an Azure VM by using an Azure Resource Manager template
+-  Deploy an Azure VM 
 
 -  Implement Azure MFA
 
@@ -34,56 +29,49 @@ After completing this lab, you will be able to:
   
 The main tasks for this exercise are as follows:
 
-1. Deploy an Azure VM by using an Azure Resource Manager template
+1. Deploy an Azure VM 
 
 
-#### Task 1: Deploy an Azure VM by using an Azure Resource Manager template
+#### Task 1: Deploy an Azure VM 
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the Azure subscription you intend to use in this lab.
 
-1. In the Azure portal, navigate to the **New** blade.
 
-1. From the **New** blade, search Azure Marketplace for **Template deployment**.
+1. Create a new resource group with below configuration
 
-1. Use the list of search results to navigate to the **Custom deployment** blade.
+   - Name: az1010401b-RG
+   - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs(Eg: East US)
 
-1. On the **Custom deployment** blade, select the **Build your own template in the editor**.
+1. In the Azure portal, create a Virtual Network with below configuration:
 
-1. From the **Edit template** blade, load the template file **az-101-04b_azuredeploy.json**. 
+   - Virtual Network Name: az1010401b-vnet1
+   - Subnet name: subnet0
+   - Location: same as resource group location
+   - Resource Group Name: az1010401b-RG
+   - Vnet Address space: 10.102.0.0/16
+   - Subnet Address space: 10.102.0.0/24
 
-   > **Note**: Review the content of the template and note that it defines deployment of an Azure VM hosting Windows Server 2016 Datacenter.
+1. Create a Virtual Machine with below configuration
 
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **az-101-04b_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1010401b-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
-
-    - Vm Size: **Standard_DS1_v2**
-
-    - Vm Name: **az1010401b-vm1**
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Virtual Network Name: **az1010401b-vnet1**
+   - Vnet: az1010401b-vnet1
+   - Subnet: subnet0
+   - Location: same as resource group location
+   - Resource Group: az1010401b-RG
+   - Name: az1010401b-vm1
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Size: Standard_DS2_v2
+   - NIC name: az1010401b-nic1
+   - publicIPAddressName: az1010401b-pip1
+   - Image Publisher: MicrosoftWindowsServer
+   - Image Offer: WindowsServer
+   - Image SKU: 2016-Datacenter
 
    > **Note**: To identify Azure regions where you can provision Azure VMs, refer to [**https://azure.microsoft.com/en-us/regions/offers/**](https://azure.microsoft.com/en-us/regions/offers/)
 
    > **Note**: Do not wait for the deployment to complete but proceed to the next exercise. You will use the virtual machine included in this deployment in the last exercise of this lab.
 
-> **Result**: After you completed this exercise, you have initiated a template deployment of an Azure VM **az1010401b-vm1** that you will use in the next exercise of this lab.
+> **Result**: After you completed this exercise, you have initiated a  deployment of an Azure VM **az1010401b-vm1** that you will use in the next exercise of this lab.
 
 
 ### Exercise 1: Implement Azure MFA
@@ -341,7 +329,7 @@ The main tasks for this exercise are as follows:
 
 #### Task 4: Validate Azure AD Identity Protection configuration by simulating risk events
 
-   > **Note**: Before you start this task, ensure that the template deployment you started in Exercise 0 has completed. 
+   > **Note**: Before you start this task, ensure that the deployment you started in Exercise 0 has completed. 
 
 1. In the Azure portal, set the **Directory + subscription** filter to the default Azure AD tenant.
 
@@ -387,30 +375,8 @@ The main tasks for this exercise are as follows:
 
 ## Exercise 3: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
-
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1010')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az1010')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
-
-> **Note**: To remove the Azure AD tenant you created in this lab, follow https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/directory-delete-howto  
+1. Open Azure portal, navigate to resource group **az1010401b-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1010401b-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
 > **Result**: In this exercise, you removed the resources used in this lab.
