@@ -6,15 +6,7 @@ lab:
 
 # Lab: Load Balancer and Traffic Manager
 
-All tasks in this lab are performed from the Azure portal (including a PowerShell Cloud Shell session) except for Exercise 1 Task 3, which includes steps performed from a Remote Desktop session to an Azure VM
-
-Lab files: 
-
--  **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_azuredeploy.json**
-
--  **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_1_azuredeploy.parameters.json**
-
--  **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_2_azuredeploy.parameters.json**
+All tasks in this lab are performed from the Azure portal except for Exercise 1 Task 3, which includes steps performed from a Remote Desktop session to an Azure VM
 
 ### Scenario
   
@@ -25,160 +17,76 @@ Adatum Corporation wants to implement Azure VM-hosted web workloads and facilita
   
 After completing this lab, you will be able to:
 
--  Deploy Azure VMs by using Azure Resource Manager templates
+-  Deploy Azure VMs
 
 -  Implement Azure Load Balancing
 
 -  Implement Azure Traffic Manager load balancing
 
 
-### Exercise 0: Deploy Azure VMs by using Azure Resource Manager templates
+### Exercise 0: Deploy Azure VMs 
   
 The main tasks for this exercise are as follows:
 
-1. Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the first Azure region by using an Azure Resource Manager template
+1. Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the first Azure region
 
-1. Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the second Azure region by using an Azure Resource Manager template
+1. Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the second Azure region
 
 
-#### Task 1: Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the first Azure region by using an Azure Resource Manager template
+#### Task 1: Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the first Azure region
 
 1. From the lab virtual machine, start Microsoft Edge, browse to the Azure portal at [**http://portal.azure.com**](http://portal.azure.com) and sign in by using a Microsoft account that has the Owner role in the target Azure subscription.
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create **two** VMs in an **Availability Set** and install IIS role into the VM with below configuration.
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
-
-1. Use the list of search results to navigate to the **Deploy a custom template** blade.
-
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
-
-1. From the **Edit template** blade, load the template file **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_azuredeploy.json**. 
-
-   > **Note**: Review the content of the template and note that it defines deployment of two Azure VMs hosting Windows Server 2016 Datacenter Core into an availability set.
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_1_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you intend to use in this lab
-
-    - Resource group: the name of a new resource group **az1010301-RG**
-
-    - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Vm Name Prefix: **az1010301w-vm**
-
-    - Nic Name Prefix: **az1010301w-nic**
-
-    - Image Publisher: **MicrosoftWindowsServer**
-
-    - Image Offer: **WindowsServer**
-
-    - Image SKU: **2016-Datacenter**
-
-    - Vm Size: use **Standard_DS1_v2** or **Standard_DS2_v2**, based on the instructor's recommendations
-
-    - Virtual Network Name: **az1010301-vnet**
-
-    - Address Prefix: **10.101.31.0/24**
-
-    - Virtual Network Resource Group: **az1010301-RG**
-
-    - Subnet0Name: **subnet0**
-
-    - Subnet0Prefix: **10.101.31.0/26**
-
-    - Availability Set Name: **az1010301w-avset**
-
-    - Network Security Group Name: **az1010301w-vm-nsg**
-
-    - Modules Url: **https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-iis-server-windows-vm/ContosoWebsite.ps1.zip**
-
-    - Configuration Function: **ContosoWebsite.ps1\\ContosoWebsite**
+   - Resource group: the name of a new resource group **az1010301-RG**
+   - Location: the name of the Azure region different from the one you chose in the previous task and where you can provision Azure VMs
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Name Prefix: az1010301w-vm
+   - Nic Name Prefix: az1010301w-nic
+   - Image Publisher: MicrosoftWindowsServer
+   - Image Offer: WindowsServer
+   - Image SKU: 2016-Datacenter
+   - Vm Size: use Standard_DS1_v2 or Standard_DS2_v2
+   - Virtual Network Name: az1010301-vnet
+   - Address Prefix: 10.101.31.0/24
+   - Virtual Network Resource Group: az1010301-RG
+   - Subnet0Name: subnet0
+   - Subnet0Prefix: 10.101.31.0/26
+   - Availability Set Name: az1010301w-avset
+   - Network Security Group Name: az1010301w-vm-nsg (allow RDP, HTTP(S) ports)
 
    > **Note**: To identify Azure regions where you can provision Azure VMs, refer to [**https://azure.microsoft.com/en-us/regions/offers/**](https://azure.microsoft.com/en-us/regions/offers/)
 
    > **Note**: Do not wait for the deployment to complete but proceed to the next task. 
 
 
-#### Task 2: Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the second Azure region by using an Azure Resource Manager template
+#### Task 2: Deploy management Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into an availability set in the second Azure region
 
-1. In the Azure portal, navigate to the **Create a resource** blade.
+1. Create **two** VMs in an **Availability Set** and install IIS role into the VM with below configuration.
 
-1. From the **Create a resource** blade, search Azure Marketplace for **Template deployment**.
-
-1. Use the list of search results to navigate to the **Deploy a custom template** blade.
-
-1. On the **Custom deployment** blade, click the **Build your own template in the editor** link. If you do not see this link, click **Edit template** instead.
-
-1. From the **Edit template** blade, load the template file **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_azuredeploy.json**. 
-
-   > **Note**: This is the same template you used in the previous task. You will use it to deploy a pair of Azure VMs to the second region. 
-
-1. Save the template and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, navigate to the **Edit parameters** blade.
-
-1. From the **Edit parameters** blade, load the parameters file **Labfiles\\Module_08\\Load_Balancer_and_Traffic_Manager\\az-101-03_01_2_azuredeploy.parameters.json**. 
-
-1. Save the parameters and return to the **Custom deployment** blade. 
-
-1. From the **Custom deployment** blade, initiate a template deployment with the following settings:
-
-    - Subscription: the name of the subscription you are using in this lab
-
-    - Resource group: the name of a new resource group **az1010302-RG**
-
-    - Location: the name of the Azure region different from the one you chose in the previous task and where you can provision Azure VMs
-
-    - Admin Username: **Student**
-
-    - Admin Password: **Pa55w.rd1234**
-
-    - Vm Name Prefix: **az1010302w-vm**
-
-    - Nic Name Prefix: **az1010302w-nic**
-
-    - Image Publisher: **MicrosoftWindowsServer**
-
-    - Image Offer: **WindowsServer**
-
-    - Image SKU: **2016-Datacenter**
-
-    - Vm Size: use **Standard_DS1_v2** or **Standard_DS2_v2**, based on the instructor's recommendations
-
-    - Virtual Network Name: **az1010302-vnet**
-
-    - Address Prefix: **10.101.32.0/24**
-
-    - Virtual Network Resource Group: **az1010302-RG**
-
-    - Subnet0Name: **subnet0**
-
-    - Subnet0Prefix: **10.101.32.0/26**
-
-    - Availability Set Name: **az1010302w-avset**
-
-    - Network Security Group Name: **az1010302w-vm-nsg**
-
-    - Modules Url: **https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-iis-server-windows-vm/ContosoWebsite.ps1.zip**
-
-    - Configuration Function: **ContosoWebsite.ps1\\ContosoWebsite**
+   - Resource group: the name of a new resource group **az1010302-RG**
+   - Location: the name of the Azure region which is closest to the lab location and where you can provision Azure VMs
+   - Admin Username: Student
+   - Admin Password: Pa55w.rd1234
+   - Vm Name Prefix: az1010302w-vm
+   - Nic Name Prefix: az1010302w-nic
+   - Image Publisher: MicrosoftWindowsServer
+   - Image Offer: WindowsServer
+   - Image SKU: 2016-Datacenter
+   - Vm Size: use Standard_DS1_v2 or Standard_DS2_v2
+   - Virtual Network Name: az1010302-vnet
+   - Address Prefix: 10.101.32.0/24
+   - Virtual Network Resource Group: az1010302-RG
+   - Subnet0Name: subnet0
+   - Subnet0Prefix: 10.101.32.0/26
+   - Availability Set Name: az1010302w-avset
+   - Network Security Group Name: az1010302w-vm-nsg (allow RDP, HTTP(S) ports)
 
    > **Note**: Do not wait for the deployment to complete but proceed to the next exercise.
 
-> **Result**: After you completed this exercise, you have used Azure Resource Manager templates to initiate deployment of Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into availability sets in two Azure regions.
+> **Result**: After you completed this exercise, you have initiated deployment of Azure VMs running Windows Server 2016 Datacenter with the Web Server (IIS) role installed into availability sets in two Azure regions.
 
 
 ### Exercise 1: Implement Azure Load Balancing
@@ -675,28 +583,10 @@ The main tasks for this exercise are as follows:
 
 ## Exercise 3: Remove lab resources
 
-#### Task 1: Open Cloud Shell
+#### Task 1: Open Azure Portal
 
-1. At the top of the portal, click the **Cloud Shell** icon to open the Cloud Shell pane.
+1. Open Azure portal, navigate to resource group **az1010301-RG** and click on **Delete Resource Group** icon. Provide the name of resource group **az1010301-RG** in the confirmation window and click on **Delete** icon to delete the resources created in this lab.
 
-1. At the Cloud Shell interface, select **Bash**.
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to list all resource groups you created in this lab:
-
-   ```sh
-   az group list --query "[?starts_with(name,'az101030')].name" --output tsv
-   ```
-
-1. Verify that the output contains only the resource groups you created in this lab. These groups will be deleted in the next task.
-
-#### Task 2: Delete resource groups
-
-1. At the **Cloud Shell** command prompt, type in the following command and press **Enter** to delete the resource groups you created in this lab
-
-   ```sh
-   az group list --query "[?starts_with(name,'az101030')].name" --output tsv | xargs -L1 bash -c 'az group delete --name $0 --no-wait --yes'
-   ```
-
-1. Close the **Cloud Shell** prompt at the bottom of the portal.
+1. Repeat the steps for **az1010302-RG** resource group
 
 > **Result**: In this exercise, you removed the resources used in this lab.
